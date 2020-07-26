@@ -19,6 +19,10 @@ import * as fs from "fs";
 import * as crypto from "crypto";
 import * as dota2 from "dota2";
 const steamClient = new steam.SteamClient();
+steamClient.connect();
+
+//console.log(steamClient);
+
 const steamUser = new steam.SteamUser(steamClient);
 const steamFriends = new steam.SteamFriends(steamClient);
 const Dota2 = new dota2.Dota2Client(steamClient, true);
@@ -28,9 +32,9 @@ const config = {
   steam_name: "go2olymp_bot2",
   steam_user: "go2olymp_bot2",
   steam_pass: "iUO.Z3Utoea3",
-  steam_guard_code: generateAuthCode('GxX96AttNnXSPHLU0sorLrdeONY=')
+  steam_guard_code: generateAuthCode('GxX96AttNnXSPHLU0sorLrdeONY='),
+  two_factor_code: generateAuthCode('GxX96AttNnXSPHLU0sorLrdeONY=')
 };
-
 
 // Load in server list if we've saved one before
 if (fs.existsSync('servers')) {
@@ -171,6 +175,7 @@ const onSteamLogOn = function onSteamLogOn(logonResp) {
       });
       // setTimeout(function(){ Dota2.exit(); }, 5000);
     }
+    console.log(logonResp);
   },
   onSteamServers = function onSteamServers(servers) {
     util.log("Received servers.");
@@ -202,6 +207,7 @@ interface ILogonDetails {
   password: string
   auth_code?: string
   sha_sentryfile?: any
+  two_factor_code?: any
 }
 
 const logOnDetails :ILogonDetails = {
@@ -209,8 +215,9 @@ const logOnDetails :ILogonDetails = {
   "password": config.steam_pass,
 };
 if (config.steam_guard_code) logOnDetails.auth_code = config.steam_guard_code;           /*сюда вставить вызов функции steam-totp.getCode(shared_key)*/
-//if (config.two_factor_code) logOnDetails.two_factor_code = config.two_factor_code;
+if (config.two_factor_code) logOnDetails.two_factor_code = config.two_factor_code;
 
+console.log(logOnDetails);
 try {
   const sentry = fs.readFileSync('sentry');
   if (sentry.length) logOnDetails.sha_sentryfile = sentry;
@@ -220,9 +227,11 @@ try {
 
 steamClient.connect();
 steamClient.on('connected', function() {
+  console.log('connected');
   steamUser.logOn(logOnDetails);
 });
 steamClient.on('logOnResponse', onSteamLogOn);
+
 steamClient.on('loggedOff', onSteamLogOff);
 steamClient.on('error', onSteamError);
 steamClient.on('servers', onSteamServers);
