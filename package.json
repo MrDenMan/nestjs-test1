@@ -25,11 +25,13 @@
     "@nestjs/core": "^7.0.0",
     "@nestjs/platform-express": "^7.0.0",
     "crypto": "^1.0.1",
+    "dota2": "^7.0.3",
     "fs": "0.0.1-security",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",
     "steam": "^1.4.1",
+    "steam-totp": "^2.1.1",
     "util": "^0.12.3"
   },
   "devDependencies": {
