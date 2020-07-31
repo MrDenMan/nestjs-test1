@@ -130,27 +130,131 @@ const onSteamLogOn = function onSteamLogOn(logonResp) {
         // setTimeout(function(){ Dota2.leaveChat(guildChannelName); }, 10000);
         // });
         /* LOBBIES */
-        //  Dota2.createPracticeLobby({"game_name": "node-dota2",
-        //                             "server_region": dota2.ServerRegion.PERFECTWORLDTELECOM,
-        //                             "game_mode": dota2.schema.DOTA_GameMode.DOTA_GAMEMODE_AR,
-        //                             "series_type": 2,
-        //                             "game_version": 1,
-        //                             "allow_cheats": false,
-        //                             "fill_with_bots": false,
-        //                             "allow_spectating": true,
-        //                             "pass_key": "password",
-        //                             "radiant_series_wins": 0,
-        //                             "dire_series_wins": 0,
-        //                             "allchat": true
-        //                             },
-        //                             function(err, body){
-        //                                  console.log(JSON.stringify(body));
-        //                             });
-        // setTimeout(function(){
-        //     Dota2.leavePracticeLobby(function(err, body){
-        //         console.log(JSON.stringify(body));
-        //     });
-        // }, 60000);
+
+          Dota2.createPracticeLobby({"game_name": "go2olymp-dota2",
+                                     "server_region": dota2.ServerRegion.PERFECTWORLDTELECOM,
+                                     "game_mode": dota2.schema.DOTA_GameMode.DOTA_GAMEMODE_AR,
+                                     "series_type": 2,
+                                     "game_version": 1,
+                                     "allow_cheats": false,
+                                     "fill_with_bots": false,
+                                     "allow_spectating": true,
+                                     "pass_key": "password",
+                                     "radiant_series_wins": 0,
+                                     "dire_series_wins": 0,
+                                     "allchat": true
+                                     },
+                                     function(err, body){
+                                          console.log(JSON.stringify(body));
+                                     });
+
+
+          const idUser = "76561198110939453";
+        setTimeout(function(){
+
+          Dota2.inviteToLobby(idUser);
+
+        }, 30000);
+
+
+          //Dota2.inviteToLobby(idUser);
+
+         setTimeout(function(){
+             Dota2.leavePracticeLobby(function(err, body){
+                 console.log(JSON.stringify(body));
+             });
+         }, 300000);
+
+        Dota2.joinPracticeLobbyBroadcastChannel(1, function(err, body){
+          console.log(JSON.stringify(body));
+        });
+
+        let chatChannel = "";
+        /*
+        Dota2.on("practiceLobbyUpdate", function(lobby) {
+          Dota2.practiceLobbyKickFromTeam(Dota2.AccountID);
+          chatChannel = "Lobby_"+lobby.lobby_id;
+          Dota2.joinChat(chatChannel, dota2.schema.DOTAChatChannelType_t.DOTAChannelType_Lobby);
+        });
+
+         */
+
+        /*
+        Dota2.on("chatMessage", function (channel, personaName, message) {
+          util.log("[" + channel + "] " + personaName + ": " + message);
+        });
+        */
+        Dota2.on("practiceLobbyUpdate", function(lobby) {
+          //   Dota2.practiceLobbyKickFromTeam(Dota2.AccountID);
+          chatChannel = "Lobby_"+lobby.lobby_id;
+          Dota2.joinChat(chatChannel, dota2.schema.DOTAChatChannelType_t.DOTAChannelType_Lobby);
+          //Dota2.joinChat(chatChannel);
+          // Dota2.sendMessage("Hello, guys! I'm go2olymp Bot.", chatChannel);
+
+          //last
+         // Dota2.sendMessage("Hello, guys! I'm go2olymp Bot.", "Lobby_"+lobby.lobby_id,3);
+
+
+        });
+        //Dota2.sendMessage("Hello, guys! I'm go2olymp Bot.", chatChannel,3);
+
+        //отвечает на отправленное сообщение
+        Dota2.on("chatMessage", function(channel, personaName, message) {
+           util.log([channel, personaName, message].join(", "));
+           setTimeout(function() {
+             console.log("Send message");
+             Dota2.sendMessage("Hello, guys! I'm go2olymp Bot.", chatChannel,3);
+
+           }, 1000)
+        });
+
+/*
+        setTimeout(function(){
+          Dota2.on("practiceLobbyUpdate", function(lobby) {
+            //   Dota2.practiceLobbyKickFromTeam(Dota2.AccountID);
+            chatChannel = "Lobby_"+lobby.lobby_id;
+             Dota2.joinChat(chatChannel, dota2.schema.DOTAChatChannelType_t.DOTAChannelType_Lobby);
+            //Dota2.joinChat(chatChannel);
+           // Dota2.sendMessage("Hello, guys! I'm go2olymp Bot.", chatChannel);
+            Dota2.sendMessage("Hello, guys! I'm go2olymp Bot.", "Lobby_"+lobby.lobby_id,2);
+
+
+          });
+        }, 10000);
+*/
+
+
+        /*
+        Dota2.on("practiceLobbyUpdate", function(lobby) {
+       //   Dota2.practiceLobbyKickFromTeam(Dota2.AccountID);
+          chatChannel = "Lobby_"+lobby.lobby_id;
+         // Dota2.joinChat(chatChannel, dota2.schema.DOTAChatChannelType_t.DOTAChannelType_Lobby);
+          Dota2.joinChat(chatChannel);
+          setTimeout(function(){
+            Dota2.sendMessage("Hello, guys! I'm go2olymp Bot.", chatChannel);
+          }, 10000);
+        });
+        */
+
+        /*
+        Dota2.joinChat(chatChannel);
+        setTimeout(function(){
+          Dota2.sendMessage("Hello, guys! I'm Dota 2 Bot.", chatChannel);
+        }, 1000);
+         */
+
+
+
+/*
+        Dota2.joinChat("rj");
+         setTimeout(function(){ Dota2.sendMessage("wowoeagnaeigniaeg", "rj"); }, 5000);
+         setTimeout(function(){ Dota2.leaveChat("rj"); }, 10000);
+*/
+
+
+
+
+
         /* LEAGUES */
         // Dota2.requestLeaguesInMonth(10, 2013, 0, function(err, data) { // November 2013
         //     console.log('Found ' + data.leagues.length + ' leagues full of schedule data :D');
