@@ -18,6 +18,7 @@ import * as util from "util";
 import * as fs from "fs";
 import * as crypto from "crypto";
 import * as dota2 from "dota2";
+import { Console } from 'inspector';
 const steamClient = new steam.SteamClient();
 steamClient.connect();
 
@@ -149,18 +150,45 @@ const onSteamLogOn = function onSteamLogOn(logonResp) {
                                      });
 
 
-          const idUser = "76561198110939453";
+        //потом перенести ко всем переменным
+        const radiantPlayers = ["76561198110939453"];
+        const direPlayers = [];
+        const allPlayers = radiantPlayers.concat(direPlayers);
+        const allPlayersDota2ID = ["150673725"];
+        const idUser = "76561198110939453";
+        //массив флагов WELCOME TO THE CLUB BUDDY
+        const flagsWelcome=[false,false,false,false,false,false,false,false,false,false];
+
+        allPlayers.forEach(function(id){
+          Dota2.inviteToLobby(id);
+        })
+
+
+
+        /*
         setTimeout(function(){
 
           Dota2.inviteToLobby(idUser);
 
         }, 30000);
+*/
+
+
+          //Dota2.inviteToLobby(idUser);
+
+          /*
+          allPlayers.forEach(function(id){
+            Dota2.inviteToLobby(id);
+          })
+          */
+
+
 
 
           //Dota2.inviteToLobby(idUser);
 
          setTimeout(function(){
-             Dota2.leavePracticeLobby(function(err, body){
+             Dota2.leavePracticeLobby(function(err,  body){
                  console.log(JSON.stringify(body));
              });
          }, 300000);
@@ -185,9 +213,117 @@ const onSteamLogOn = function onSteamLogOn(logonResp) {
         });
         */
         Dota2.on("practiceLobbyUpdate", function(lobby) {
+
+          //timer
+          let flag=0
+          if(lobby["members"].length==2){ //==players+bot (11)
+
+            if(flag==0){
+
+              flag++;
+
+            }
+          }
+
+
+
+
+
           //   Dota2.practiceLobbyKickFromTeam(Dota2.AccountID);
           chatChannel = "Lobby_"+lobby.lobby_id;
           Dota2.joinChat(chatChannel, dota2.schema.DOTAChatChannelType_t.DOTAChannelType_Lobby);
+
+            //lobby.game_name.split("#")[1], status, lobby["members"]
+
+
+
+          console.log(lobby["members"].length);
+
+          //AUTO INVITE
+          if(lobby["members"].length==1){
+            for(let j=0;j<allPlayersDota2ID.length;j++){
+                Dota2.inviteToLobby(allPlayers[j]);
+              }
+          }
+          else
+          {
+            for(let i=1;i<lobby["members"].length; i++ ){
+              for(let j=0;j<allPlayersDota2ID.length;j++){
+                if(lobby["members"][i].id.low==allPlayersDota2ID[j]){
+                  console.log("Находится в лобби"+lobby["members"][i].id.low);
+                  console.log("Находится в лобби"+allPlayersDota2ID[j]);
+                }
+                else{
+                  Dota2.inviteToLobby(allPlayers[j]);
+                }
+
+              }
+            }
+
+          }
+
+          //AUTO KICK
+
+          if(lobby["members"].length!=1)
+          {
+            for(let i=1;i<lobby["members"].length; i++ ){
+              let flagDontKick;
+              const number=i;
+
+              for(let j=0;j<allPlayersDota2ID.length;j++){
+                if(lobby["members"][i].id.low==allPlayersDota2ID[j]){
+                  flagDontKick=true;
+                  //number=i;
+                  console.log("In lobby"+lobby["members"][i].id.low);
+                }
+              }
+              if(flagDontKick!=true){
+                console.log("KICK: "+ lobby["members"][number].id.low);
+                Dota2.practiceLobbyKick(lobby["members"][number].id.low);
+              }
+            }
+
+          }
+
+          chatChannel = "Lobby_"+lobby.lobby_id;
+
+          //Dota2.practiceLobbyKick(150673725);
+
+
+
+          //NOT WORK
+          //MESSAGES WELCOME
+          console.log("сейчас в лобби: "+lobby["members"].length)
+          for(let i=0;i<lobby["members"].length-1; i++){
+            console.log("POG"+flagsWelcome[i]);
+            if(flagsWelcome[i]==false){
+              console.log("PEPEGA");
+              const chatChannel1 = "Lobby_"+lobby.lobby_id;//не подключается к каналу
+              Dota2.joinChat(chatChannel1, dota2.schema.DOTAChatChannelType_t.DOTAChannelType_Lobby);
+              Dota2.sendMessage("Players:", chatChannel1,3);
+              Dota2.sendMessage("Welcome to the club buddy: "+lobby["members"][i+1].name, chatChannel1,3);
+              flagsWelcome[i]=true;
+            }
+          }
+
+
+          console.log(lobby["members"]);
+          console.log(lobby["members"].length);
+         // console.log(lobby["members"][0].name);
+
+          for(let i=0;i<lobby["members"].length; i++ ){
+            console.log(lobby["members"][i].name);
+            console.log(lobby["members"][i].id.low);
+           //console.log(lobby["members"][i].);
+            //if(lobby["members"])
+            //animals.indexOf( 'dog' ) != -1
+
+          }
+
+
+          //lobby.members.account_name;
+
+
           //Dota2.joinChat(chatChannel);
           // Dota2.sendMessage("Hello, guys! I'm go2olymp Bot.", chatChannel);
 
@@ -195,7 +331,21 @@ const onSteamLogOn = function onSteamLogOn(logonResp) {
          // Dota2.sendMessage("Hello, guys! I'm go2olymp Bot.", "Lobby_"+lobby.lobby_id,3);
 
 
+          //Dota2.sendMessage("222Hello, guys! I'm go2olymp Bot.", chatChannel,3);
+          const realPlayers=lobby["members"].length-1;
+          Dota2.sendMessage("Players: "+realPlayers+"/10", chatChannel,3);
+          /*
+          allPlayers.forEach(function(id){
+            const accept=true;
+            console.log(Dota2.respondLobbyInvite(id, accept));
+          })
+          */
+
         });
+
+        console.log("Send test message");
+        Dota2.sendMessage("111Hello, guys! I'm go2olymp Bot.", chatChannel,3);
+
         //Dota2.sendMessage("Hello, guys! I'm go2olymp Bot.", chatChannel,3);
 
         //отвечает на отправленное сообщение
