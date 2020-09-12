@@ -1,10 +1,34 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { Winston } from './logger/logger.service';
+import * as winston from 'winston';
+
 
 import {generateAuthCode} from 'steam-totp';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const logger = winston.createLogger({
+    transports: [
+      new winston.transports.File({
+        level: 'info',
+        filename: 'filelog-info.log',
+        format: winston.format.combine(winston.format.timestamp(), winston.format.json())
+      }),
+      new winston.transports.File({
+        level: 'error',
+        filename: 'filelog-info.log',
+        format: winston.format.combine(winston.format.timestamp(), winston.format.json())
+      }),
+      new winston.transports.File({
+        level: 'warn',
+        filename: 'filelog-info.log',
+        format: winston.format.combine(winston.format.timestamp(), winston.format.json())
+      })
+    ]
+  });
+  const app = await NestFactory.create(AppModule, {
+    logger: new Winston(logger),
+  });
   await app.listen(3000);
 }
 bootstrap();
@@ -215,7 +239,7 @@ const onSteamLogOn = function onSteamLogOn(logonResp) {
         Dota2.on("practiceLobbyUpdate", function(lobby) {
 
           //timer
-          let flag=0
+          /*let flag=0
           if(lobby["members"].length==2){ //==players+bot (11)
 
             if(flag==0){
@@ -223,7 +247,7 @@ const onSteamLogOn = function onSteamLogOn(logonResp) {
               flag++;
 
             }
-          }
+          }*/
 
 
 

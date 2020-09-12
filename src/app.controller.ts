@@ -12,10 +12,3 @@ export class AppController {
     return this.appService.getHello();
   }
 }
-/*
-@Controller('cats')
-export class CatsController {
-  constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger) { }
-}
-
- */

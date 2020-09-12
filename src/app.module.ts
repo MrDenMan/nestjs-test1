@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { WinstonModule } from 'nest-winston';
-import * as winston from 'winston';
+import { CalcModule } from './calc/calc.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
-  imports: [WinstonModule.forRoot({
-    // options
-  }),],
+  imports: [CalcModule, LoggerModule],
   controllers: [AppController],
   providers: [AppService],
 })
