@@ -2,30 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Winston } from './logger/logger.service';
 import * as winston from 'winston';
-
-
+import { loggerOptions } from './logger/logger-options';
+//import * as elasticsearch from 'elasticsearch'; правильно from @nestjs/elasticsearch
 import {generateAuthCode} from 'steam-totp';
 
+
 async function bootstrap() {
-  const logger = winston.createLogger({
-    transports: [
-      new winston.transports.File({
-        level: 'info',
-        filename: 'filelog-info.log',
-        format: winston.format.combine(winston.format.timestamp(), winston.format.json())
-      }),
-      new winston.transports.File({
-        level: 'error',
-        filename: 'filelog-info.log',
-        format: winston.format.combine(winston.format.timestamp(), winston.format.json())
-      }),
-      new winston.transports.File({
-        level: 'warn',
-        filename: 'filelog-info.log',
-        format: winston.format.combine(winston.format.timestamp(), winston.format.json())
-      })
-    ]
-  });
+
+
+  const logger = winston.createLogger(loggerOptions);
   const app = await NestFactory.create(AppModule, {
     logger: new Winston(logger),
   });
@@ -237,6 +222,8 @@ const onSteamLogOn = function onSteamLogOn(logonResp) {
         });
         */
         Dota2.on("practiceLobbyUpdate", function(lobby) {
+          console.log("members"+lobby.members.length);
+          console.log("members"+lobby["members"].length);
 
           //timer
           /*let flag=0
@@ -259,9 +246,46 @@ const onSteamLogOn = function onSteamLogOn(logonResp) {
 
             //lobby.game_name.split("#")[1], status, lobby["members"]
 
+          //WelcomeMessages
+          //lobby["members"][i].id.low
+
+          console.log("THAT"+lobby["members"].length);
+          allPlayersDota2ID.forEach(function(idPayer :any) {
+            switch (idPayer) {
+              case "150673725": {
+                console.log("QWEQWEQE"+lobby["members"].length);
+                for(let i=0;i<lobby["members"].length;i++){
+                  console.log("ID LOW "+lobby["members"][i].id.low);
+
+                  if(lobby["members"][i].id.low=="150673725"){
+                    console.log(lobby["members"][i].id.low);
+                    const chatChannel1 = "Lobby_"+lobby.lobby_id;//не подключается к каналу
+                    Dota2.joinChat(chatChannel1, dota2.schema.DOTAChatChannelType_t.DOTAChannelType_Lobby);
+                    Dota2.sendMessage("Привет? "+lobby["members"][i].account_name+"!", chatChannel,3);
+                  }
+                  console.log("NE ROBIT");
+                }
+                console.log("1111NE ROBIT");
+                /*
+                const chatChannel1 = "Lobby_"+lobby.lobby_id;//не подключается к каналу
+                Dota2.joinChat(chatChannel1, dota2.schema.DOTAChatChannelType_t.DOTAChannelType_Lobby);
+                Dota2.sendMessage("Я ЧИКИРЯУ.", chatChannel,3);*/
+                break;
+              }
+              default: {
+                /*const chatChannel1 = "Lobby_"+lobby.lobby_id;//не подключается к каналу
+                Dota2.joinChat(chatChannel1, dota2.schema.DOTAChatChannelType_t.DOTAChannelType_Lobby);
+                Dota2.sendMessage("ЧИКИРЯУ.", chatChannel,3);*/
+                console.log("WelcomeMessage для такого айди не существует")
+              }
 
 
-          console.log(lobby["members"].length);
+
+            }
+
+          })
+
+          console.log("qweqwewq"+lobby["members"].length);
 
           //AUTO INVITE
           if(lobby["members"].length==1){
@@ -329,6 +353,7 @@ const onSteamLogOn = function onSteamLogOn(logonResp) {
               flagsWelcome[i]=true;
             }
           }
+
 
 
           console.log(lobby["members"]);
