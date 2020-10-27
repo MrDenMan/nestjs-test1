@@ -11,6 +11,43 @@ export class CalcService {
   add(a: number, b: number): number {
     //console.log(this.winston);
 
+    this.elasticsearchService.bulk({
+      refresh: true,
+      body: [
+        // operation to perform
+        { index: { _index: 'game-of-thrones' } },
+        // the document to index
+        {
+          character: 'Ned Stark',
+          quote: 'Winter is coming.'
+        },
+
+        { index: { _index: 'game-of-thrones' } },
+        {
+          character: 'Daenerys Targaryen',
+          quote: 'I am the blood of the dragon.'
+        },
+
+        { index: { _index: 'game-of-thrones' } },
+        {
+          character: 'Tyrion Lannister',
+          quote: 'A mind needs books like a sword needs a whetstone.'
+        }
+      ]
+    })
+    this.elasticsearchService.search({
+      index: 'game-of-thrones',
+      body: {
+        query: {
+          match: {
+            quote: 'winter'
+          }
+        }
+      }
+    }, {
+      asStream: true
+    })
+
     this.elasticsearchService.search({
       index: 'my-index',
       body: {
